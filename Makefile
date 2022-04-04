@@ -1,4 +1,4 @@
-NAME ?= testkube-executor-template
+NAME ?= testkube-executor-soapui
 BIN_DIR ?= $(HOME)/bin
 
 build:
@@ -45,3 +45,7 @@ version-bump-major:
 
 version-bump-dev:
 	go run cmd/tools/main.go bump --dev
+
+update-modules: ## Update go modules
+	go get -u ./...
+	go mod tidy

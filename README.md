@@ -1,20 +1,14 @@
 ![Testkube Logo](https://raw.githubusercontent.com/kubeshop/testkube/main/assets/testkube-color-gray.png)
 
-# Welcome to TestKube Template Executor
+# Welcome to Testkube SoapUI Executor
 
-TestKube Template Executor is a test executor skeleton for [TestKube](https://testkube.io).  
-You can use it as basic building blocks for creating a new executor.
+Testkube SoapUI Executor is a test executor module for [Testkube](https://testkube.io).
 
-# What is an Executor?
+# Issues and enchancements
 
-Executor is nothing more than a program wrapped into Docker container which gets JSON (testube.Execution) OpenAPI based document as an input and returns a stream of JSON output lines (testkube.ExecutorOutput), where each output line is simply wrapped in this JSON, similar to the structured logging idea. 
+Please follow the main [Testkube repository](https://github.com/kubeshop/testkube) for reporting any [issues](https://github.com/kubeshop/testkube/issues) or [discussions](https://github.com/kubeshop/testkube/discussions)
 
-
-# Issues and enchancements 
-
-Please follow the main [TestKube repository](https://github.com/kubeshop/testkube) for reporting any [issues](https://github.com/kubeshop/testkube/issues) or [discussions](https://github.com/kubeshop/testkube/discussions)
-
-## Implemention in several steps:
+## Implemention in several steps
 
 1. Create new repo on top of this template 
 2. Change `go.mod` file with your path (just replace `github.com/kubeshop/testkube-executor-template` project-wise with your package path) 
