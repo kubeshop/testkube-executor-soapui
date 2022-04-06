@@ -46,7 +46,7 @@ func setUpEnvironment(testFilePath string) {
 
 // runSoapUI runs SoapUI tests and returns the output
 func runSoapUI() testkube.ExecutionResult {
-	output, err := exec.Command("/usr/local/SmartBear/Entrypoint.sh").Output()
+	output, err := exec.Command("/bin/sh", "/usr/local/SmartBear/EntryPoint.sh").Output()
 	if err != nil {
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,

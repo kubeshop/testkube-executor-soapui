@@ -4,7 +4,6 @@ WORKDIR /build
 COPY . .
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-
 RUN cd cmd/agent;go build -o /runner -mod mod -a .
 
 FROM smartbear/soapuios-testrunner

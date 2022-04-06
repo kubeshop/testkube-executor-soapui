@@ -5,11 +5,11 @@ metadata:
   namespace: testkube
 spec:
   executor_type: job  
-  image: kubeshop/testkube-executor-soapui:latest 
+  image: vlia/testkube-executor-soapui:latest
   types:
   - soapui/rest
   - soapui/soap
-  content-types:
+  content_types:
   - string
   - file-uri
   - git-file
@@ -18,4 +18,3 @@ spec:
   - extensions
   - plugins
   - arguments
-  
