@@ -57,9 +57,12 @@ Test created  / example-test-string 🥇
 ```
 
 ### Using params and args in your tests
-TODO
 
-To run the test, use:
+To see all available parameters, check the [official SoapUI docs](https://www.soapui.org/docs/test-automation/running-functional-tests/).
+
+## Running the tests
+
+To run the created test, use:
 
 ```bash
 $ kubectl testkube run test example-test
