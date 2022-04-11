@@ -42,7 +42,7 @@ Test created  / example-test 🥇
 ### Using strings as input
 
 ```bash
-$ cat REST-Project-2-soapui-project.xml | kubectl testkube create test --type soapui/rest --name example-test-string
+$ cat REST-Project-1-soapui-project.xml | kubectl testkube create test --type soapui/rest --name example-test-string
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      

@@ -12,7 +12,6 @@ spec:
   content_types:
   - string
   - file-uri
-  - git-file
   features: 
   - reports
   - extensions
