@@ -1,11 +1,10 @@
 package runner
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
 	"github.com/kubeshop/testkube/pkg/executor/content"
@@ -33,7 +32,7 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 	}
 
 	output.PrintEvent("created content path", testFile)
-	setUpEnvironment(execution.Params, testFile)
+	setUpEnvironment(execution.Args, testFile)
 
 	if execution.Content.IsDir() {
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
@@ -44,15 +43,9 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 
 // setTestFile sets up the COMMAND_LINE environment variable to
 // point to the test file path
-func setUpEnvironment(params map[string]string, testFilePath string) {
-	args := new(bytes.Buffer)
-	for k, v := range params {
-		fmt.Fprintf(args, "%s \"%s\" ", k, v)
-	}
-	fmt.Fprintf(args, "%s", testFilePath)
-	fmt.Println(args)
-
-	os.Setenv("COMMAND_LINE", args.String())
+func setUpEnvironment(args []string, testFilePath string) {
+	args = append(args, testFilePath)
+	os.Setenv("COMMAND_LINE", strings.Join(args, " "))
 }
 
 // runSoapUI runs SoapUI tests and returns the output
