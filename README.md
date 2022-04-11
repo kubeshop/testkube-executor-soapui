@@ -97,7 +97,7 @@ When working with Testkube, the way to use the parameters is by using the `kubec
 An example would be:
 
 ```bash
-$ kubectl testkube start test -f example-test --args '-c "TestCase 1"'
+$ kubectl testkube start test -f example-test --args '-I -c "TestCase 1"'
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
@@ -138,6 +138,8 @@ SoapUI 5.7.0 TestCase Runner
 Use following command to get test execution details:
 $ kubectl testkube get execution 625404e5a4cc6d2861193c60
 ```
+
+Usage of the `-I` argument is highly suggested to get cleaner results.
 
 ## Reports, plugins and extensions
 
