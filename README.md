@@ -58,7 +58,38 @@ Test created  / example-test-string 🥇
 
 ### Using params and args in your tests
 
-To see all available parameters, check the [official SoapUI docs](https://www.soapui.org/docs/test-automation/running-functional-tests/).
+SoapUI lets you configure your test runs using different parameters. To see all available command line arguments, check the [official SoapUI docs](https://www.soapui.org/docs/test-automation/running-functional-tests/).
+
+When working with Testkube, the way to use the parameters is by using the `kubectl testkube start` command with the `-p` parameter.
+An example would be:
+
+```bash
+$ kubectl testkube start test successful-test -p '-c=TestCase 1'
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
+
+
+Type          : soapui/rest
+Name          : successful-test
+Execution ID  : 6253f0f0a4cc6d2861193c52
+Execution name: adequately-improved-marmoset
+
+
+
+Test execution started
+
+Watch test execution until complete:
+$ kubectl testkube watch execution 6253f0f0a4cc6d2861193c52
+
+
+Use following command to get test execution details:
+$ kubectl testkube get execution 6253f0f0a4cc6d2861193c52
+```
 
 ## Running the tests
 

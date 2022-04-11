@@ -19,6 +19,9 @@ vendor/
 .idea
 *.iml
 
+### VS Code
+.vscode/
+
 # Helm
 Chart.lock
 
