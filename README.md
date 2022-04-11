@@ -56,6 +56,39 @@ Test created  / example-test-string 🥇
 
 ```
 
+## Running the tests
+
+To run the created test, use:
+
+```bash
+$ kubectl testkube run test example-test
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
+
+
+Type          : soapui/rest
+Name          : example-test
+Execution ID  : 624eedd443ed8485ae9289e2
+Execution name: illegally-credible-mouse
+
+
+
+Test execution started
+
+Watch test execution until complete:
+$ kubectl testkube watch execution 624eedd443ed8485ae9289e2
+
+
+Use following command to get test execution details:
+$ kubectl testkube get execution 624eedd443ed8485ae9289e2
+
+```
+
 ### Using params and args in your tests
 
 SoapUI lets you configure your test runs using different parameters. To see all available command line arguments, check the [official SoapUI docs](https://www.soapui.org/docs/test-automation/running-functional-tests/).
@@ -64,7 +97,7 @@ When working with Testkube, the way to use the parameters is by using the `kubec
 An example would be:
 
 ```bash
-$ kubectl testkube start test -f successful-test --args '-c "TestCase 1"' 
+$ kubectl testkube start test -f example-test --args '-c "TestCase 1"'
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
@@ -104,39 +137,6 @@ SoapUI 5.7.0 TestCase Runner
 .
 Use following command to get test execution details:
 $ kubectl testkube get execution 625404e5a4cc6d2861193c60
-```
-
-## Running the tests
-
-To run the created test, use:
-
-```bash
-$ kubectl testkube run test example-test
-
-████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
-   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
-   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
-   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
-   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
-                                           /tɛst kjub/ by Kubeshop
-
-
-Type          : soapui/rest
-Name          : example-test
-Execution ID  : 624eedd443ed8485ae9289e2
-Execution name: illegally-credible-mouse
-
-
-
-Test execution started
-
-Watch test execution until complete:
-$ kubectl testkube watch execution 624eedd443ed8485ae9289e2
-
-
-Use following command to get test execution details:
-$ kubectl testkube get execution 624eedd443ed8485ae9289e2
-
 ```
 
 ## Reports, plugins and extensions
