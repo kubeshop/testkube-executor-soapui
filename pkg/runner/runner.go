@@ -11,6 +11,7 @@ import (
 	"github.com/kubeshop/testkube/pkg/executor/output"
 )
 
+// NewRunner creates a new SoapUIRunner
 func NewRunner() *SoapUIRunner {
 	return &SoapUIRunner{
 		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
@@ -38,18 +39,18 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
 	}
 
-	return r.RunSoapUI(), nil
+	return r.runSoapUI(), nil
 }
 
-// setTestFile sets up the COMMAND_LINE environment variable to
-// point to the test file path
+// setUpEnvironment sets up the COMMAND_LINE environment variable to
+// contain the incoming arguments and to point to the test file path
 func setUpEnvironment(args []string, testFilePath string) {
 	args = append(args, testFilePath)
 	os.Setenv("COMMAND_LINE", strings.Join(args, " "))
 }
 
-// runSoapUI runs SoapUI tests and returns the output
-func (r *SoapUIRunner) RunSoapUI() testkube.ExecutionResult {
+// runSoapUI runs the SoapUI executable and returns the output
+func (r *SoapUIRunner) runSoapUI() testkube.ExecutionResult {
 	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
 	if err != nil {
 		return testkube.ExecutionResult{
