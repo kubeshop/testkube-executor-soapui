@@ -1,21 +1,19 @@
-# Contribution to Testkube 
+# Contribution to Testkube
 
 Thanks for reaching out contribution 🎉
 
-If you're new in Open-source community there is nice guide how to start contributing to projects: 
-https://github.com/firstcontributions/first-contributions
+If you're new in Open-source community there is nice guide how to start contributing to projects:
+[https://github.com/firstcontributions/first-contributions]
 
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the Testkube [code of conduct](CODE_OF_CONDUCT.md)
 
-## Have questions or idea? 
+## Have questions or idea?
 
 We're using github discussions for managing pre-development ideas and clarifications, feel free to add one at our [Q&A discussion page](https://github.com/kubeshop/testkube/discussions/categories/q-a)
 
 New ideas should be placed in [Ideas discussion page](https://github.com/kubeshop/testkube/discussions/categories/ideas)
-
-
 
 ## General guidance for contributing to Testkube project
 
@@ -36,9 +34,7 @@ We're trying hard to limit technical debt from the beginning so we defined simpl
 - Comment non-obvious decisions
 - Use current Helm/Kubernetes versions
 
-
 ## How can I help?
 
 - By fixing [one of many Issues](https://github.com/kubeshop/testkube/issues) - simply fork our repo and create new Pull Request with new code changes. 
 - By helping to reach out valid results [from discussions](https://github.com/kubeshop/testkube/discussions)
-

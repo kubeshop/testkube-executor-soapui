@@ -1,77 +1,164 @@
 ![Testkube Logo](https://raw.githubusercontent.com/kubeshop/testkube/main/assets/testkube-color-gray.png)
 
-# Welcome to TestKube Template Executor
+# Welcome to Testkube SoapUI Executor
 
-TestKube Template Executor is a test executor skeleton for [TestKube](https://testkube.io).  
-You can use it as basic building blocks for creating a new executor.
+Testkube SoapUI Executor is a test executor module for [Testkube](https://testkube.io).
 
-# What is an Executor?
+# Details
 
-Executor is nothing more than a program wrapped into Docker container which gets JSON (testube.Execution) OpenAPI based document as an input and returns a stream of JSON output lines (testkube.ExecutorOutput), where each output line is simply wrapped in this JSON, similar to the structured logging idea. 
+## Importing the SoapUI Executor into your Testkube cluster
+
+In order to be able to run tests with this executor, it first needs to be imported as a Custom Resource into your Kubernetes cluster.
+This can be achieved by cloning the repository and running:
+
+```bash
+$ kubectl testkube create executor --image kubeshop/testkube-executor-soapui:latest --types "soapui/rest" --types "soapui/soap" --name soapui-executor
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
 
 
-# Issues and enchancements 
-
-Please follow the main [TestKube repository](https://github.com/kubeshop/testkube) for reporting any [issues](https://github.com/kubeshop/testkube/issues) or [discussions](https://github.com/kubeshop/testkube/discussions)
-
-## Implemention in several steps:
-
-1. Create new repo on top of this template 
-2. Change `go.mod` file with your path (just replace `github.com/kubeshop/testkube-executor-template` project-wise with your package path) 
-3. Implement your own Runner on top of [runner interface](https://github.com/kubeshop/testkube/blob/main/pkg/runner/interface.go
-4. Change Dockerfile - use base image of whatever test framework/library you want to use
-5. Build and push dockerfile to some repository
-6. Register Executor Custom Resource in your cluster 
-
-```yaml
-apiVersion: executor.testkube.io/v1
-kind: Executor
-metadata:
-  name: postman-executor
-  namespace: testkube
-spec:
-  executor_type: job
-  image: kubeshop/testkube-template-executor:0.0.1
-  types:
-  - example/test
+Executor created soapui-executor 🥇
 ```
 
+## Running a SoapUI test
 
-## Architecture
+In order to run a SoapUI test using Testkube, it is necessary to create a Testkube Test.
 
-This Executor template offers you basic building blocks to write a new executor based on TestKube 
-libraries written in Go programming language, but you're not limited only to Go, you can 
-write in any other programming language like Rust, Javascript, Java or Clojure.
+### Using files as input
 
-The only thing you'll need to do is to follow the OpenAPI spec for input `testkube.Execution` 
-(passed as first argument in JSON form) and all output should be JSON lines 
-with `testkube.ExecutorOutput` spec.  
-You should also have a final `ExecutorOutput` with `ExecutionResult` attached somewhere after successful (or failed) test execution.
+Testkube and the SoapUI executor accepts a project file as input.
 
-Resources: 
-- [OpenAPI spec details](https://kubeshop.github.io/testkube/openapi/)
-- [Spec in YAML file](https://raw.githubusercontent.com/kubeshop/testkube/main/api/v1/testkube.yaml)
+```bash
+$ kubectl testkube create test --file REST-Project-1-soapui-project.xml --type soapui/rest --name example-test
 
-Go based resources for input and output objects:
-- input: [`testkube.Execution`](https://github.com/kubeshop/testkube/blob/main/pkg/api/v1/testkube/model_execution.go)
-- output line: [`testkube.ExecutorOutput`](https://github.com/kubeshop/testkube/blob/main/pkg/api/v1/testkube/model_executor_output.go)
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
 
 
-## Examples
+Test created  / example-test 🥇
 
-- This template repo, which is the simplest one
-- [Postman executor](https://github.com/kubeshop/testkube-executor-postman)
-- [Cypress executor](https://github.com/kubeshop/testkube-executor-cypress)
-- [Curl executor](https://github.com/kubeshop/testkube-executor-curl)
+```
+
+### Using strings as input
+
+```bash
+$ cat REST-Project-1-soapui-project.xml | kubectl testkube create test --type soapui/rest --name example-test-string
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
 
 
-# Testkube 
+Test created  / example-test-string 🥇
 
-For more info go to [main testkube repo](https://github.com/kubeshop/testkube)
+```
 
-![Release](https://img.shields.io/github/v/release/kubeshop/testkube) [![Releases](https://img.shields.io/github/downloads/kubeshop/testkube/total.svg)](https://github.com/kubeshop/testkube/tags?label=Downloads) ![Go version](https://img.shields.io/github/go-mod/go-version/kubeshop/testkube)
+## Running the tests
 
-![Docker builds](https://img.shields.io/docker/automated/kubeshop/testkube-api-server) ![Code build](https://img.shields.io/github/workflow/status/kubeshop/testkube/Code%20build%20and%20checks) ![Release date](https://img.shields.io/github/release-date/kubeshop/testkube)
+To run the created test, use:
 
-![Twitter](https://img.shields.io/twitter/follow/thekubeshop?style=social) ![Discord](https://img.shields.io/discord/884464549347074049)
- #### [Documentation](https://kubeshop.github.io/testkube) | [Discord](https://discord.gg/hfq44wtR6Q) 
+```bash
+$ kubectl testkube run test example-test
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
+
+
+Type          : soapui/rest
+Name          : example-test
+Execution ID  : 624eedd443ed8485ae9289e2
+Execution name: illegally-credible-mouse
+
+
+
+Test execution started
+
+Watch test execution until complete:
+$ kubectl testkube watch execution 624eedd443ed8485ae9289e2
+
+
+Use following command to get test execution details:
+$ kubectl testkube get execution 624eedd443ed8485ae9289e2
+
+```
+
+### Using params and args in your tests
+
+SoapUI lets you configure your test runs using different parameters. To see all available command line arguments, check the [official SoapUI docs](https://www.soapui.org/docs/test-automation/running-functional-tests/).
+
+When working with Testkube, the way to use the parameters is by using the `kubectl testkube start` command with the `--args` parameter.
+An example would be:
+
+```bash
+$ kubectl testkube start test -f example-test --args '-I -c "TestCase 1"'
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
+
+
+Type          : soapui/rest
+Name          : successful-test
+Execution ID  : 625404e5a4cc6d2861193c60
+Execution name: currently-amused-pug
+
+
+Getting pod logs
+Execution completed ================================
+=
+= SOAPUI_HOME = /usr/local/SmartBear/SoapUI-5.7.0
+=
+================================
+SoapUI 5.7.0 TestCase Runner
+10:37:37,713 INFO  [DefaultSoapUICore] Creating new settings at [/root/soapui-settings.xml]
+10:37:43,567 INFO  [PluginManager] 0 plugins loaded in 36 ms
+10:37:43,570 INFO  [DefaultSoapUICore] All plugins loaded
+10:37:50,774 INFO  [WsdlProject] Loaded project from [file:/tmp/test-content359342991]
+10:37:50,834 INFO  [SoapUITestCaseRunner] Running SoapUI tests in project [REST Project 2]
+10:37:50,838 INFO  [SoapUITestCaseRunner] Running TestCase [TestCase 1]
+10:37:50,876 INFO  [SoapUITestCaseRunner] Running SoapUI testcase [TestCase 1]
+10:37:50,901 INFO  [SoapUITestCaseRunner] running step [1 - Request 1]
+10:37:54,180 INFO  [SoapUITestCaseRunner] Assertion [Valid HTTP Status Codes] has status VALID
+10:37:54,193 INFO  [SoapUITestCaseRunner] Assertion [Contains] has status VALID
+10:37:54,257 INFO  [SoapUITestCaseRunner] Finished running SoapUI testcase [TestCase 1], time taken: 990ms, status: FINISHED
+10:37:54,315 INFO  [SoapUITestCaseRunner] TestCase [TestCase 1] finished with status [FINISHED] in 990ms
+
+
+.
+Use following command to get test execution details:
+$ kubectl testkube get execution 625404e5a4cc6d2861193c60
+```
+
+Usage of the `-I` argument is highly suggested to get cleaner results.
+
+## Reports, plugins and extensions
+
+In order to be able to use reports, add plugins and extensions the way [SoapUI docs](https://www.soapui.org/docs/test-automation/running-in-docker/) describe it, is currently not supported by Testkube.
+In case you need this feature, please create an issue in the Testkube repository as described below.
+
+# API
+
+Testkube Executor SoapUI implements [testkube OpenAPI for executors](https://kubeshop.github.io/testkube/openapi/#operations-tag-executor) (look at executor tag)
+
+# Issues and enchancements
+
+Please follow the main [Testkube repository](https://github.com/kubeshop/testkube) for reporting any [issues](https://github.com/kubeshop/testkube/issues) or [discussions](https://github.com/kubeshop/testkube/discussions)

@@ -1,50 +1,66 @@
 package runner
 
 import (
+	"errors"
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
 )
 
-func NewRunner() *ExampleRunner {
-	return &ExampleRunner{
-		Fetcher: content.NewFetcher(),
+// NewRunner creates a new SoapUIRunner
+func NewRunner() *SoapUIRunner {
+	return &SoapUIRunner{
+		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
+		Fetcher:        content.NewFetcher(""),
 	}
 }
 
-// ExampleRunner for template - change me to some valid runner
-type ExampleRunner struct {
-	Fetcher content.ContentFetcher
+// SoapUIRunner runs SoapUI tests
+type SoapUIRunner struct {
+	SoapUIExecPath string
+	Fetcher        content.ContentFetcher
 }
 
-func (r *ExampleRunner) Run(execution testkube.Execution) (result testkube.ExecutionResult, err error) {
-	path, err := r.Fetcher.Fetch(execution.Content)
+// Run executes the test and returns the test results
+func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.ExecutionResult, err error) {
+	testFile, err := r.Fetcher.Fetch(execution.Content)
 	if err != nil {
 		return result, err
 	}
 
-	output.PrintEvent("created content path", path)
-
-	if execution.Content.IsFile() {
-		output.PrintEvent("using file", execution)
-		// TODO implement file based test content for string, git-file, file-uri
-		//      or remove if not used
-	}
+	output.PrintEvent("created content path", testFile)
+	setUpEnvironment(execution.Args, testFile)
 
 	if execution.Content.IsDir() {
-		output.PrintEvent("using dir", execution)
-		// TODO implement file based test content for git-dir
-		//      or remove if not used
+		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
 	}
 
-	// TODO run executor here
+	return r.runSoapUI(), nil
+}
 
-	// error result should be returned if something is not ok
-	// return result.Err(fmt.Errorf("some test execution related error occured"))
+// setUpEnvironment sets up the COMMAND_LINE environment variable to
+// contain the incoming arguments and to point to the test file path
+func setUpEnvironment(args []string, testFilePath string) {
+	args = append(args, testFilePath)
+	os.Setenv("COMMAND_LINE", strings.Join(args, " "))
+}
 
-	// TODO return ExecutionResult
+// runSoapUI runs the SoapUI executable and returns the output
+func (r *SoapUIRunner) runSoapUI() testkube.ExecutionResult {
+	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
+	if err != nil {
+		return testkube.ExecutionResult{
+			Status:       testkube.ExecutionStatusFailed,
+			ErrorMessage: err.Error(),
+		}
+	}
+
 	return testkube.ExecutionResult{
-		Status: testkube.StatusPtr(testkube.SUCCESS_ExecutionStatus),
-		Output: "exmaple test output",
-	}, nil
+		Status: testkube.ExecutionStatusPassed,
+		Output: string(output),
+	}
 }
