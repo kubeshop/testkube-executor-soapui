@@ -70,21 +70,13 @@ func TestRun(t *testing.T) {
 			SoapUIExecPath: file.Name(),
 		}
 		execution := testkube.Execution{
-			Id:              "get_petstore",
-			TestName:        "Get Petstore",
-			TestNamespace:   "petstore",
-			TestType:        "soapui/rest",
-			Name:            "Testing GET",
-			Envs:            map[string]string{},
-			Args:            []string{"-c 'TestCase 1'"},
-			Params:          map[string]string{},
-			ParamsFile:      "",
-			Content:         &testkube.TestContent{},
-			StartTime:       time.Time{},
-			EndTime:         time.Time{},
-			Duration:        "0s",
-			ExecutionResult: nil,
-			Labels:          map[string]string{},
+			Id:            "get_petstore",
+			TestName:      "Get Petstore",
+			TestNamespace: "petstore",
+			TestType:      "soapui/rest",
+			Name:          "Testing GET",
+			Args:          []string{"-c 'TestCase 1'"},
+			Content:       &testkube.TestContent{},
 		}
 
 		res, err := runner.Run(execution)

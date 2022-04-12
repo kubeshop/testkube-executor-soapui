@@ -12,8 +12,17 @@ In order to be able to run tests with this executor, it first needs to be import
 This can be achieved by cloning the repository and running:
 
 ```bash
-$ kubectl apply -f executor.yaml
-executor.executor.testkube.io/soapui-executor configured
+$ kubectl testkube create executor --image kubeshop/testkube-executor-soapui:latest --types "soapui/rest" --types "soapui/soap" --name soapui-executor
+
+████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
+   ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    █████   ███████    ██    █████   ██    ██ ██████  █████   
+   ██    ██           ██    ██    ██  ██  ██    ██ ██   ██ ██      
+   ██    ███████ ███████    ██    ██   ██  ██████  ██████  ███████ 
+                                           /tɛst kjub/ by Kubeshop
+
+
+Executor created soapui-executor 🥇
 ```
 
 ## Running a SoapUI test
