@@ -12,7 +12,7 @@ In order to be able to run tests with this executor, it first needs to be import
 This can be achieved by cloning the repository and running:
 
 ```bash
-$ kubectl testkube create executor --image kubeshop/testkube-executor-soapui:latest --types "soapui/rest" --types "soapui/soap" --name soapui-executor
+$ kubectl testkube create executor --image kubeshop/testkube-executor-soapui:latest --types "soapui/xml" --name soapui-executor
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
@@ -34,7 +34,7 @@ In order to run a SoapUI test using Testkube, it is necessary to create a Testku
 Testkube and the SoapUI executor accepts a project file as input.
 
 ```bash
-$ kubectl testkube create test --file REST-Project-1-soapui-project.xml --type soapui/rest --name example-test
+$ kubectl testkube create test --file REST-Project-1-soapui-project.xml --type soapui/xml --name example-test
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
@@ -51,7 +51,7 @@ Test created  / example-test 🥇
 ### Using strings as input
 
 ```bash
-$ cat REST-Project-1-soapui-project.xml | kubectl testkube create test --type soapui/rest --name example-test-string
+$ cat REST-Project-1-soapui-project.xml | kubectl testkube create test --type soapui/xml --name example-test-string
 
 ████████ ███████ ███████ ████████ ██   ██ ██    ██ ██████  ███████ 
    ██    ██      ██         ██    ██  ██  ██    ██ ██   ██ ██      
@@ -80,7 +80,7 @@ $ kubectl testkube run test example-test
                                            /tɛst kjub/ by Kubeshop
 
 
-Type          : soapui/rest
+Type          : soapui/xml
 Name          : example-test
 Execution ID  : 624eedd443ed8485ae9289e2
 Execution name: illegally-credible-mouse
@@ -116,7 +116,7 @@ $ kubectl testkube start test -f example-test --args '-I -c "TestCase 1"'
                                            /tɛst kjub/ by Kubeshop
 
 
-Type          : soapui/rest
+Type          : soapui/xml
 Name          : successful-test
 Execution ID  : 625404e5a4cc6d2861193c60
 Execution name: currently-amused-pug

@@ -7,8 +7,7 @@ spec:
   executor_type: job  
   image: kubeshop/testkube-executor-soapui:latest
   types:
-  - soapui/rest
-  - soapui/soap
+  - soapui/xml
   content_types:
   - string
   - file-uri
