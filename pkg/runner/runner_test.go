@@ -1,88 +1,97 @@
 package runner
 
 import (
+	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"testing"
-	"time"
 
+	"github.com/kubeshop/testkube-executor-soapui/pkg/mock"
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRun(t *testing.T) {
 	testXML := "./example/REST-Project-1-soapui-project.xml"
+	f := mock.Fetcher{}
+	f.FetchFn = func(content *testkube.TestContent) (path string, err error) {
+		return testXML, nil
+	}
 
-	t.Run("Successful test", func(t *testing.T) {
-		t.Parallel()
+	e := testkube.Execution{
+		Id:            "get_petstore",
+		TestName:      "Get Petstore",
+		TestNamespace: "petstore",
+		TestType:      "soapui/xml",
+		Name:          "Testing GET",
+		Args:          []string{"-c 'TestCase 1'"},
+		Content:       &testkube.TestContent{},
+	}
 
-		f := MockFetcher{}
+	tests := []struct {
+		name            string
+		scraper         func(id string, directories []string) error
+		testFileCreator func() (*os.File, error)
+		execution       testkube.Execution
+		expectedError   string
+		expectedStatus  testkube.ExecutionStatus
+	}{
+		{
+			name:            "Successful test, successful scraper",
+			scraper:         func(id string, directories []string) error { return nil },
+			testFileCreator: createSuccessfulScript,
+			execution:       e,
+			expectedError:   "",
+			expectedStatus:  *testkube.ExecutionStatusPassed,
+		},
+		{
+			name:            "Failing test, successful scraper",
+			scraper:         func(id string, directories []string) error { return nil },
+			testFileCreator: createFailingScript,
+			execution:       e,
+			expectedError:   "",
+			expectedStatus:  *testkube.ExecutionStatusFailed,
+		},
+		{
+			name:            "Successful test, failing scraper",
+			scraper:         func(id string, directories []string) error { return errors.New("Scraping failed") },
+			testFileCreator: createSuccessfulScript,
+			execution:       e,
+			expectedError:   "failed getting artifacts: Scraping failed",
+			expectedStatus:  *testkube.ExecutionStatusPassed,
+		},
+		{
+			name:            "Failing test, failing scraper",
+			scraper:         func(id string, directories []string) error { return errors.New("Scraping failed") },
+			testFileCreator: createFailingScript,
+			execution:       e,
+			expectedError:   "failed getting artifacts: Scraping failed",
+			expectedStatus:  *testkube.ExecutionStatusFailed,
+		},
+	}
 
-		f.FetchFn = func(content *testkube.TestContent) (path string, err error) {
-			return testXML, nil
-		}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-		file, err := createSuccessfulScript()
-		assert.NoError(t, err)
-		defer file.Close()
-		runner := SoapUIRunner{
-			Fetcher:        f,
-			SoapUIExecPath: file.Name(),
-		}
-		execution := testkube.Execution{
-			Id:              "get_petstore",
-			TestName:        "Get Petstore",
-			TestNamespace:   "petstore",
-			TestType:        "soapui/xml",
-			Name:            "Testing GET",
-			Envs:            map[string]string{},
-			Args:            []string{"-c 'TestCase 1'"},
-			Params:          map[string]string{},
-			ParamsFile:      "",
-			Content:         &testkube.TestContent{},
-			StartTime:       time.Time{},
-			EndTime:         time.Time{},
-			Duration:        "0s",
-			ExecutionResult: nil,
-			Labels:          map[string]string{},
-		}
+			s := mock.Scrapper{}
+			s.ScrapeFn = test.scraper
 
-		res, err := runner.Run(execution)
-		assert.NoError(t, err)
-		assert.Equal(t, res.Status, testkube.ExecutionStatusPassed)
-	})
+			file, err := test.testFileCreator()
+			assert.NoError(t, err)
+			defer file.Close()
 
-	t.Run("Failing test", func(t *testing.T) {
-		t.Parallel()
+			runner := SoapUIRunner{
+				Fetcher:        f,
+				SoapUIExecPath: file.Name(),
+				Scrapper:       s,
+			}
 
-		f := MockFetcher{}
-
-		f.FetchFn = func(content *testkube.TestContent) (path string, err error) {
-			return testXML, nil
-		}
-
-		file, err := createFailingScript()
-		assert.NoError(t, err)
-		defer file.Close()
-		runner := SoapUIRunner{
-			Fetcher:        f,
-			SoapUIExecPath: file.Name(),
-		}
-		execution := testkube.Execution{
-			Id:            "get_petstore",
-			TestName:      "Get Petstore",
-			TestNamespace: "petstore",
-			TestType:      "soapui/xml",
-			Name:          "Testing GET",
-			Args:          []string{"-c 'TestCase 1'"},
-			Content:       &testkube.TestContent{},
-		}
-
-		res, err := runner.Run(execution)
-		assert.NoError(t, err)
-		assert.Equal(t, res.Status, testkube.ExecutionStatusFailed)
-	})
+			res, err := runner.Run(test.execution)
+			assert.EqualError(t, err, test.expectedError)
+			assert.Equal(t, test.expectedStatus, *res.Status)
+		})
+	}
 }
 
 func createSuccessfulScript() (*os.File, error) {
@@ -91,7 +100,7 @@ func createSuccessfulScript() (*os.File, error) {
 		return nil, err
 	}
 
-	_, err = file.WriteString("/bin/sh\nexit 0\n")
+	_, err = file.WriteString("#!/bin/sh\nexit 0\n")
 	if err != nil {
 		return nil, err
 	}
@@ -105,53 +114,10 @@ func createFailingScript() (*os.File, error) {
 		return nil, err
 	}
 
-	_, err = file.WriteString("/bin/sh\nexit 1\n")
+	_, err = file.WriteString("#!/bin/sh\nexit 1\n")
 	if err != nil {
 		return nil, err
 	}
 
 	return file, nil
-}
-
-type MockFetcher struct {
-	FetchFn        func(content *testkube.TestContent) (path string, err error)
-	FetchStringFn  func(str string) (path string, err error)
-	FetchURIFn     func(uri string) (path string, err error)
-	FetchGitDirFn  func(repo *testkube.Repository) (path string, err error)
-	FetchGitFileFn func(repo *testkube.Repository) (path string, err error)
-}
-
-func (f MockFetcher) Fetch(content *testkube.TestContent) (path string, err error) {
-	if f.FetchFn == nil {
-		log.Fatal("not implemented")
-	}
-	return f.FetchFn(content)
-}
-
-func (f MockFetcher) FetchString(str string) (path string, err error) {
-	if f.FetchStringFn == nil {
-		log.Fatal("not implemented")
-	}
-	return f.FetchStringFn(str)
-}
-
-func (f MockFetcher) FetchURI(str string) (path string, err error) {
-	if f.FetchURIFn == nil {
-		log.Fatal("not implemented")
-	}
-	return f.FetchURIFn(str)
-}
-
-func (f MockFetcher) FetchGitDir(repo *testkube.Repository) (path string, err error) {
-	if f.FetchGitDirFn == nil {
-		log.Fatal("not implemented")
-	}
-	return f.FetchGitDir(repo)
-}
-
-func (f MockFetcher) FetchGitFile(repo *testkube.Repository) (path string, err error) {
-	if f.FetchGitFileFn == nil {
-		log.Fatal("not implemented")
-	}
-	return f.FetchGitFileFn(repo)
 }
