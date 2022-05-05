@@ -11,7 +11,7 @@ import (
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
-	"github.com/kubeshop/testkube/pkg/executor/scrapper"
+	"github.com/kubeshop/testkube/pkg/executor/scraper"
 )
 
 type Params struct {
@@ -24,18 +24,18 @@ type Params struct {
 }
 
 // NewRunner creates a new SoapUIRunner
-func NewRunner() *SoapUIRunner {
+func NewRunner() (*SoapUIRunner, error) {
 	var params Params
 	err := envconfig.Process("runner", &params)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	return &SoapUIRunner{
 		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
 		SoapUILogsPath: "/root/.soapuios/logs",
 		Fetcher:        content.NewFetcher(""),
-		Scrapper: scrapper.NewScrapper(
+		Scraper: scraper.NewMinioScraper(
 			params.Endpoint,
 			params.AccessKeyID,
 			params.SecretAccessKey,
@@ -43,7 +43,7 @@ func NewRunner() *SoapUIRunner {
 			params.Token,
 			params.Ssl,
 		),
-	}
+	}, nil
 }
 
 // SoapUIRunner runs SoapUI tests
@@ -51,12 +51,7 @@ type SoapUIRunner struct {
 	SoapUIExecPath string
 	SoapUILogsPath string
 	Fetcher        content.ContentFetcher
-	Scrapper       Scrapper
-}
-
-// Scrapper is responsible for persisting the necessary artifacts
-type Scrapper interface {
-	Scrape(id string, directories []string) error
+	Scraper        scraper.Scraper
 }
 
 // Run executes the test and returns the test results
@@ -77,7 +72,7 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 	result = r.runSoapUI()
 
 	output.PrintEvent("scraping for log files")
-	if err = r.Scrapper.Scrape(execution.Id, []string{r.SoapUILogsPath}); err != nil {
+	if err = r.Scraper.Scrape(execution.Id, []string{r.SoapUILogsPath}); err != nil {
 		return result, fmt.Errorf("failed getting artifacts: %w", err)
 	}
 

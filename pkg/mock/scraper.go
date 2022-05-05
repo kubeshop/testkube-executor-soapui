@@ -2,12 +2,12 @@ package mock
 
 import "log"
 
-// Scrapper implements a mock for the Scrapper from "github.com/kubeshop/testkube/pkg/executor/content"
-type Scrapper struct {
+// Scraper implements a mock for the Scraper from "github.com/kubeshop/testkube/pkg/executor/scraper"
+type Scraper struct {
 	ScrapeFn func(id string, directories []string) error
 }
 
-func (s Scrapper) Scrape(id string, directories []string) error {
+func (s Scraper) Scrape(id string, directories []string) error {
 	if s.ScrapeFn == nil {
 		log.Fatal("not implemented")
 	}

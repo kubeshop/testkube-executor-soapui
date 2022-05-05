@@ -74,7 +74,7 @@ func TestRun(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			s := mock.Scrapper{}
+			s := mock.Scraper{}
 			s.ScrapeFn = test.scraper
 
 			file, err := test.testFileCreator()
@@ -84,7 +84,7 @@ func TestRun(t *testing.T) {
 			runner := SoapUIRunner{
 				Fetcher:        f,
 				SoapUIExecPath: file.Name(),
-				Scrapper:       s,
+				Scraper:        s,
 			}
 
 			res, err := runner.Run(test.execution)
