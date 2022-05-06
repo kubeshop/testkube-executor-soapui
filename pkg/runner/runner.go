@@ -2,27 +2,56 @@ package runner
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
+	"github.com/kubeshop/testkube/pkg/executor/scraper"
 )
 
+type Params struct {
+	Endpoint        string // RUNNER_ENDPOINT
+	AccessKeyID     string // RUNNER_ACCESSKEYID
+	SecretAccessKey string // RUNNER_SECRETACCESSKEY
+	Location        string // RUNNER_LOCATION
+	Token           string // RUNNER_TOKEN
+	Ssl             bool   // RUNNER_SSL
+}
+
 // NewRunner creates a new SoapUIRunner
-func NewRunner() *SoapUIRunner {
+func NewRunner() (*SoapUIRunner, error) {
+	var params Params
+	err := envconfig.Process("runner", &params)
+	if err != nil {
+		return nil, err
+	}
+
 	return &SoapUIRunner{
 		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
+		SoapUILogsPath: "/root/.soapuios/logs",
 		Fetcher:        content.NewFetcher(""),
-	}
+		Scraper: scraper.NewMinioScraper(
+			params.Endpoint,
+			params.AccessKeyID,
+			params.SecretAccessKey,
+			params.Location,
+			params.Token,
+			params.Ssl,
+		),
+	}, nil
 }
 
 // SoapUIRunner runs SoapUI tests
 type SoapUIRunner struct {
 	SoapUIExecPath string
+	SoapUILogsPath string
 	Fetcher        content.ContentFetcher
+	Scraper        scraper.Scraper
 }
 
 // Run executes the test and returns the test results
@@ -39,7 +68,15 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
 	}
 
-	return r.runSoapUI(), nil
+	output.PrintEvent("running SoapUI tests")
+	result = r.runSoapUI()
+
+	output.PrintEvent("scraping for log files")
+	if err = r.Scraper.Scrape(execution.Id, []string{r.SoapUILogsPath}); err != nil {
+		return result, fmt.Errorf("failed getting artifacts: %w", err)
+	}
+
+	return result, nil
 }
 
 // setUpEnvironment sets up the COMMAND_LINE environment variable to

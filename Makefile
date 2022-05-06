@@ -47,5 +47,5 @@ version-bump-dev:
 	go run cmd/tools/main.go bump --dev
 
 update-modules: ## Update go modules
-	go get -u ./...
 	go mod tidy
+	go get -u ./...
