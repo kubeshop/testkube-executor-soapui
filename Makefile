@@ -1,4 +1,4 @@
-NAME ?= testkube-executor-soapui
+NAME ?= testkube-soapui-executor
 BIN_DIR ?= $(HOME)/bin
 
 build:
@@ -13,7 +13,7 @@ mongo-dev:
 	docker run -p 27017:27017 mongo
 
 docker-build: 
-	docker build -t kubeshop/$(NAME) -f build/agent/Dockerfile .
+	docker build  --platform linux/amd64 -t kubeshop/$(NAME) -f build/agent/Dockerfile .
 
 install-swagger-codegen-mac: 
 	brew install swagger-codegen
