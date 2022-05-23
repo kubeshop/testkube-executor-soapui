@@ -44,9 +44,9 @@ jobs:
           push: true
 
       - name: Output commit sha
-          id: github_sha
-          run: |
-            echo "::set-output name=sha_short::${GITHUB_SHA::7}"
+        id: github_sha
+        run: |
+          echo "::set-output name=sha_short::${GITHUB_SHA::7}"
 
       #Trigger Helm repo workflow to deploy Dashboard to Stage cluster
       - name: Repository Dispatch
