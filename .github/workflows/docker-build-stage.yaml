@@ -45,7 +45,6 @@ jobs:
         run: |
           echo "::set-output name=sha_short::${GITHUB_SHA::7}"
 
-      #Trigger Helm repo workflow to deploy Dashboard to Stage cluster
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
