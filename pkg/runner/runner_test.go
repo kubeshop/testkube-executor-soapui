@@ -2,7 +2,6 @@ package runner
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -95,7 +94,7 @@ func TestRun(t *testing.T) {
 }
 
 func createSuccessfulScript() (*os.File, error) {
-	file, err := ioutil.TempFile("", "successful_script")
+	file, err := os.CreateTemp("", "successful_script")
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +108,7 @@ func createSuccessfulScript() (*os.File, error) {
 }
 
 func createFailingScript() (*os.File, error) {
-	file, err := ioutil.TempFile("", "failing_script")
+	file, err := os.CreateTemp("", "failing_script")
 	if err != nil {
 		return nil, err
 	}
