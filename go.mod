@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/kubeshop/testkube v1.3.13
+	github.com/kubeshop/testkube v1.3.17
 	github.com/stretchr/testify v1.7.1
 )
 
