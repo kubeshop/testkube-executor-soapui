@@ -8,4 +8,7 @@ RUN cd cmd/agent;go build -o /runner -mod mod -a .
 
 FROM smartbear/soapuios-testrunner
 COPY --from=builder /runner /bin/runner
+
+USER 1001
+
 ENTRYPOINT ["/bin/runner"]
