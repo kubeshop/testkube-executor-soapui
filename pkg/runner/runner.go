@@ -12,6 +12,7 @@ import (
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
 	"github.com/kubeshop/testkube/pkg/executor/scraper"
+	"github.com/kubeshop/testkube/pkg/executor/secret"
 )
 
 type Params struct {
@@ -75,7 +76,7 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 	}
 
 	output.PrintEvent("running SoapUI tests")
-	result = r.runSoapUI()
+	result = r.runSoapUI(&execution)
 
 	output.PrintEvent("scraping for log files")
 	if err = r.Scraper.Scrape(execution.Id, []string{r.SoapUILogsPath}); err != nil {
@@ -93,8 +94,17 @@ func setUpEnvironment(args []string, testFilePath string) {
 }
 
 // runSoapUI runs the SoapUI executable and returns the output
-func (r *SoapUIRunner) runSoapUI() testkube.ExecutionResult {
+func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.ExecutionResult {
+
+	envManager := secret.NewEnvManagerWithVars(execution.Variables)
+	envManager.GetVars(execution.Variables)
+	for _, env := range execution.Variables {
+		os.Setenv(env.Name, env.Value)
+	}
+
+	// TODO: should we use executor.Run here?
 	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
+	output = envManager.Obfuscate(output)
 	if err != nil {
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
