@@ -22,6 +22,7 @@ type Params struct {
 	Location        string // RUNNER_LOCATION
 	Token           string // RUNNER_TOKEN
 	Ssl             bool   // RUNNER_SSL
+	Datadir         string // RUNNER_DATADIR
 }
 
 // NewRunner creates a new SoapUIRunner
@@ -34,8 +35,7 @@ func NewRunner() (*SoapUIRunner, error) {
 
 	return &SoapUIRunner{
 		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
-		SoapUILogsPath: "/root/.soapuios/logs",
-		Fetcher:        content.NewFetcher(""),
+		SoapUILogsPath: "/home/soapui/.soapuios/logs",
 		Scraper: scraper.NewMinioScraper(
 			params.Endpoint,
 			params.AccessKeyID,
@@ -44,6 +44,7 @@ func NewRunner() (*SoapUIRunner, error) {
 			params.Token,
 			params.Ssl,
 		),
+		Datadir: params.Datadir,
 	}, nil
 }
 
@@ -51,19 +52,19 @@ func NewRunner() (*SoapUIRunner, error) {
 type SoapUIRunner struct {
 	SoapUIExecPath string
 	SoapUILogsPath string
-	Fetcher        content.ContentFetcher
 	Scraper        scraper.Scraper
+	Datadir        string
 }
 
 // Run executes the test and returns the test results
 func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.ExecutionResult, err error) {
-	testFile, err := r.Fetcher.Fetch(execution.Content)
-	if err != nil {
+	// check that the datadir exists
+	_, err = os.Stat(r.Datadir)
+	if errors.Is(err, os.ErrNotExist) {
 		return result, err
 	}
 
-	output.PrintEvent("created content path", testFile)
-	setUpEnvironment(execution.Args, testFile)
+	setUpEnvironment(execution.Args, r.Datadir)
 
 	if execution.Content.IsDir() {
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")

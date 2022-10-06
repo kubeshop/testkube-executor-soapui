@@ -12,10 +12,6 @@ import (
 
 func TestRun(t *testing.T) {
 	testXML := "./example/REST-Project-1-soapui-project.xml"
-	f := mock.Fetcher{}
-	f.FetchFn = func(content *testkube.TestContent) (path string, err error) {
-		return testXML, nil
-	}
 
 	e := testkube.Execution{
 		Id:            "get_petstore",
@@ -81,9 +77,9 @@ func TestRun(t *testing.T) {
 			defer file.Close()
 
 			runner := SoapUIRunner{
-				Fetcher:        f,
 				SoapUIExecPath: file.Name(),
 				Scraper:        s,
+				Datadir:        testXML,
 			}
 
 			res, err := runner.Run(test.execution)
