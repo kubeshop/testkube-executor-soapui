@@ -9,7 +9,8 @@ RUN cd cmd/agent;go build -o /runner -mod mod -a .
 FROM smartbear/soapuios-testrunner
 COPY --from=builder /runner /bin/runner
 
-RUN chmod 777 /usr/local/SmartBear && \
+RUN apt-get update && apt-get install -y git && \
+    chmod 777 /usr/local/SmartBear && \
     useradd -m -d /home/soapui -s /bin/bash -u 1001 -r -g root soapui
 USER 1001
 
