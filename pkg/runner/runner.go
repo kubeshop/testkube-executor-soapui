@@ -24,6 +24,8 @@ type Params struct {
 	Ssl             bool   // RUNNER_SSL
 }
 
+const FailureMessage string = "finished with status [FAILED]"
+
 // NewRunner creates a new SoapUIRunner
 func NewRunner() (*SoapUIRunner, error) {
 	var params Params
@@ -99,14 +101,20 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 
 	// TODO: should we use executor.Run here?
 	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
-	output = envManager.Obfuscate(output)
 	if err != nil {
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
 			ErrorMessage: err.Error(),
 		}
 	}
+	if strings.Contains(string(output), FailureMessage) {
+		return testkube.ExecutionResult{
+			Status:       testkube.ExecutionStatusFailed,
+			ErrorMessage: FailureMessage,
+		}
+	}
 
+	output = envManager.Obfuscate(output)
 	return testkube.ExecutionResult{
 		Status: testkube.ExecutionStatusPassed,
 		Output: string(output),
