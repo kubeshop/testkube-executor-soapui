@@ -70,12 +70,6 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
 	}
 
-	// add configuration files
-	err = content.PlaceFiles(execution.CopyFiles)
-	if err != nil {
-		return result.Err(fmt.Errorf("could not place config files: %w", err)), nil
-	}
-
 	output.PrintEvent("running SoapUI tests")
 	result = r.runSoapUI(&execution)
 
