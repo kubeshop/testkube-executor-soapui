@@ -24,6 +24,8 @@ type Params struct {
 	Ssl             bool   // RUNNER_SSL
 }
 
+const FailureMessage string = "finished with status [FAILED]"
+
 // NewRunner creates a new SoapUIRunner
 func NewRunner() (*SoapUIRunner, error) {
 	var params Params
@@ -104,6 +106,13 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
 			ErrorMessage: err.Error(),
+		}
+	}
+	if strings.Contains(string(output), FailureMessage) {
+		return testkube.ExecutionResult{
+			Status:       testkube.ExecutionStatusFailed,
+			ErrorMessage: FailureMessage,
+			Output:       string(output),
 		}
 	}
 
