@@ -101,6 +101,7 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 
 	// TODO: should we use executor.Run here?
 	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
+	output = envManager.Obfuscate(output)
 	if err != nil {
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
@@ -111,10 +112,10 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
 			ErrorMessage: FailureMessage,
+			Output:       string(output),
 		}
 	}
 
-	output = envManager.Obfuscate(output)
 	return testkube.ExecutionResult{
 		Status: testkube.ExecutionStatusPassed,
 		Output: string(output),
