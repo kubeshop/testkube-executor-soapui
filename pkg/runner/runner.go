@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/kubeshop/testkube/pkg/api/v1/testkube"
+	"github.com/kubeshop/testkube/pkg/executor"
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
 	"github.com/kubeshop/testkube/pkg/executor/scraper"
@@ -99,8 +99,12 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 		os.Setenv(env.Name, env.Value)
 	}
 
-	// TODO: should we use executor.Run here?
-	output, err := exec.Command("/bin/sh", r.SoapUIExecPath).Output()
+	runPath := ""
+	if execution.Content.Repository != nil {
+		runPath = execution.Content.Repository.WorkingDir
+	}
+
+	output, err := executor.Run(runPath, "/bin/sh", envManager, r.SoapUIExecPath)
 	output = envManager.Obfuscate(output)
 	if err != nil {
 		return testkube.ExecutionResult{
