@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/kelseyhightower/envconfig"
@@ -22,6 +23,7 @@ type Params struct {
 	Location        string // RUNNER_LOCATION
 	Token           string // RUNNER_TOKEN
 	Ssl             bool   // RUNNER_SSL
+	DataDir         string // RUNNER_DATADIR
 }
 
 const FailureMessage string = "finished with status [FAILED]"
@@ -46,6 +48,7 @@ func NewRunner() (*SoapUIRunner, error) {
 			params.Token,
 			params.Ssl,
 		),
+		DataDir: params.DataDir,
 	}, nil
 }
 
@@ -55,7 +58,7 @@ type SoapUIRunner struct {
 	SoapUILogsPath string
 	Fetcher        content.ContentFetcher
 	Scraper        scraper.Scraper
-	Datadir        string
+	DataDir        string
 }
 
 // Run executes the test and returns the test results
@@ -101,7 +104,7 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 
 	runPath := ""
 	if execution.Content.Repository != nil {
-		runPath = execution.Content.Repository.WorkingDir
+		runPath = filepath.Join(r.DataDir, "repo", execution.Content.Repository.WorkingDir)
 	}
 
 	output, err := executor.Run(runPath, "/bin/sh", envManager, r.SoapUIExecPath)
