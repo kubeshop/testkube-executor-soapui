@@ -103,7 +103,7 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 	}
 
 	runPath := ""
-	if execution.Content.Repository != nil {
+	if execution.Content.Repository != nil && execution.Content.Repository.WorkingDir != "" {
 		runPath = filepath.Join(r.DataDir, "repo", execution.Content.Repository.WorkingDir)
 	}
 
