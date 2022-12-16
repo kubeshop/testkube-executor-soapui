@@ -12,6 +12,7 @@ import (
 	"github.com/kubeshop/testkube/pkg/executor"
 	"github.com/kubeshop/testkube/pkg/executor/content"
 	"github.com/kubeshop/testkube/pkg/executor/output"
+	"github.com/kubeshop/testkube/pkg/executor/runner"
 	"github.com/kubeshop/testkube/pkg/executor/scraper"
 	"github.com/kubeshop/testkube/pkg/executor/secret"
 )
@@ -127,4 +128,9 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 		Status: testkube.ExecutionStatusPassed,
 		Output: string(output),
 	}
+}
+
+// GetType returns runner type
+func (r *SoapUIRunner) GetType() runner.Type {
+	return runner.TypeMain
 }
