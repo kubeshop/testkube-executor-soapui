@@ -98,8 +98,8 @@ func setUpEnvironment(args []string, testFilePath string) {
 func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.ExecutionResult {
 
 	envManager := secret.NewEnvManagerWithVars(execution.Variables)
-	envManager.GetVars(execution.Variables)
-	for _, env := range execution.Variables {
+	envManager.GetVars(envManager.Variables)
+	for _, env := range envManager.Variables {
 		os.Setenv(env.Name, env.Value)
 	}
 
