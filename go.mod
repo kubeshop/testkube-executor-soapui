@@ -3,8 +3,7 @@ module github.com/kubeshop/testkube-executor-soapui
 go 1.18
 
 require (
-	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/kubeshop/testkube v1.8.17-0.20230110143037-d9256136a9fe
+	github.com/kubeshop/testkube v1.8.21
 	github.com/stretchr/testify v1.8.1
 )
 
@@ -29,9 +28,10 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.1 // indirect
-	github.com/kubeshop/testkube-operator v1.8.3 // indirect
+	github.com/kubeshop/testkube-operator v1.8.4 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
