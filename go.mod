@@ -3,7 +3,7 @@ module github.com/kubeshop/testkube-executor-soapui
 go 1.18
 
 require (
-	github.com/kubeshop/testkube v1.8.21
+	github.com/kubeshop/testkube v1.8.22
 	github.com/stretchr/testify v1.8.1
 )
 
