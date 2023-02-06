@@ -38,6 +38,7 @@ func NewRunner() (*SoapUIRunner, error) {
 			params.SecretAccessKey,
 			params.Location,
 			params.Token,
+			params.Bucket,
 			params.Ssl,
 		),
 		DataDir: params.DataDir,
