@@ -91,9 +91,6 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 
 	envManager := secret.NewEnvManagerWithVars(execution.Variables)
 	envManager.GetVars(envManager.Variables)
-	for _, env := range envManager.Variables {
-		os.Setenv(env.Name, env.Value)
-	}
 
 	runPath := ""
 	if execution.Content.Repository != nil && execution.Content.Repository.WorkingDir != "" {
