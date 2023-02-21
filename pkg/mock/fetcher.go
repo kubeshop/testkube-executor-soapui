@@ -8,11 +8,12 @@ import (
 
 // Fetcher implements the Mock version of the content fetcher from 	"github.com/kubeshop/testkube/pkg/executor/content"
 type Fetcher struct {
-	FetchFn        func(content *testkube.TestContent) (path string, err error)
-	FetchStringFn  func(str string) (path string, err error)
-	FetchURIFn     func(uri string) (path string, err error)
-	FetchGitDirFn  func(repo *testkube.Repository) (path string, err error)
-	FetchGitFileFn func(repo *testkube.Repository) (path string, err error)
+	FetchFn                     func(content *testkube.TestContent) (path string, err error)
+	FetchStringFn               func(str string) (path string, err error)
+	FetchURIFn                  func(uri string) (path string, err error)
+	FetchGitDirFn               func(repo *testkube.Repository) (path string, err error)
+	FetchGitFileFn              func(repo *testkube.Repository) (path string, err error)
+	FetchCalculateContentTypeFn func(repo testkube.Repository) (string, error)
 }
 
 func (f Fetcher) Fetch(content *testkube.TestContent) (path string, err error) {
@@ -48,4 +49,11 @@ func (f Fetcher) FetchGitFile(repo *testkube.Repository) (path string, err error
 		log.Fatal("not implemented")
 	}
 	return f.FetchGitFileFn(repo)
+}
+
+func (f Fetcher) CalculateGitContentType(repo testkube.Repository) (string, error) {
+	if f.FetchCalculateContentTypeFn == nil {
+		log.Fatal("not implemented")
+	}
+	return f.FetchCalculateContentTypeFn(repo)
 }

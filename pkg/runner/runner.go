@@ -11,10 +11,10 @@ import (
 	"github.com/kubeshop/testkube/pkg/envs"
 	"github.com/kubeshop/testkube/pkg/executor"
 	"github.com/kubeshop/testkube/pkg/executor/content"
+	"github.com/kubeshop/testkube/pkg/executor/env"
 	"github.com/kubeshop/testkube/pkg/executor/output"
 	"github.com/kubeshop/testkube/pkg/executor/runner"
 	"github.com/kubeshop/testkube/pkg/executor/scraper"
-	"github.com/kubeshop/testkube/pkg/executor/secret"
 	"github.com/kubeshop/testkube/pkg/ui"
 )
 
@@ -89,8 +89,8 @@ func setUpEnvironment(args []string, testFilePath string) {
 // runSoapUI runs the SoapUI executable and returns the output
 func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.ExecutionResult {
 
-	envManager := secret.NewEnvManagerWithVars(execution.Variables)
-	envManager.GetVars(envManager.Variables)
+	envManager := env.NewManagerWithVars(execution.Variables)
+	envManager.GetReferenceVars(envManager.Variables)
 
 	runPath := ""
 	if execution.Content.Repository != nil && execution.Content.Repository.WorkingDir != "" {
@@ -98,7 +98,7 @@ func (r *SoapUIRunner) runSoapUI(execution *testkube.Execution) testkube.Executi
 	}
 
 	output, err := executor.Run(runPath, "/bin/sh", envManager, r.SoapUIExecPath)
-	output = envManager.Obfuscate(output)
+	output = envManager.ObfuscateSecrets(output)
 	if err != nil {
 		return testkube.ExecutionResult{
 			Status:       testkube.ExecutionStatusFailed,
