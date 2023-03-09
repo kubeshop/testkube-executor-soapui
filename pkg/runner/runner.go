@@ -65,7 +65,12 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 
 	setUpEnvironment(execution.Args, testFile)
 
-	if execution.Content.IsDir() {
+	fileInfo, err := os.Stat(testFile)
+	if err != nil {
+		return result, err
+	}
+
+	if fileInfo.IsDir() {
 		return testkube.ExecutionResult{}, errors.New("SoapUI executor only tests one project per execution, a directory of projects was given")
 	}
 
