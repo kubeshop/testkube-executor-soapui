@@ -31,7 +31,7 @@ func NewRunner() (*SoapUIRunner, error) {
 	return &SoapUIRunner{
 		SoapUIExecPath: "/usr/local/SmartBear/EntryPoint.sh",
 		SoapUILogsPath: "/home/soapui/.soapuios/logs",
-		Fetcher:        content.NewFetcher(params.DataDir),
+		Fetcher:        content.NewFetcher(""),
 		Scraper: scraper.NewMinioScraper(
 			params.Endpoint,
 			params.AccessKeyID,
