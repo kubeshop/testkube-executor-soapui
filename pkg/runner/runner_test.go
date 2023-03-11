@@ -72,7 +72,6 @@ func TestRun(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			os.Setenv("RUNNER_DATADIR", tempDir)			
 			s := mock.Scraper{}
 			s.ScrapeFn = test.scraper
 
@@ -83,10 +82,16 @@ func TestRun(t *testing.T) {
 			runner := SoapUIRunner{
 				SoapUIExecPath: file.Name(),
 				Scraper:        s,
+				DataDir:        tempDir,
 			}
 
 			res, err := runner.Run(test.execution)
-			assert.EqualError(t, err, test.expectedError)
+			if test.expectedError == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.EqualError(t, err, test.expectedError)
+			}
+
 			assert.Equal(t, test.expectedStatus, *res.Status)
 		})
 	}
