@@ -3,6 +3,7 @@ package runner
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/kubeshop/testkube-executor-soapui/pkg/mock"
@@ -11,11 +12,11 @@ import (
 )
 
 func TestRun(t *testing.T) {
+	tempDir := os.TempDir()
+	os.Setenv("RUNNER_DATADIR", tempDir)
+
 	testXML := "./example/REST-Project-1-soapui-project.xml"
-	f := mock.Fetcher{}
-	f.FetchFn = func(content *testkube.TestContent) (path string, err error) {
-		return testXML, nil
-	}
+	writeTestContent(t, tempDir, testXML)
 
 	e := testkube.Execution{
 		Id:            "get_petstore",
@@ -24,7 +25,7 @@ func TestRun(t *testing.T) {
 		TestType:      "soapui/xml",
 		Name:          "Testing GET",
 		Args:          []string{"-c 'TestCase 1'"},
-		Content:       &testkube.TestContent{},
+		Content:       testkube.NewStringTestContent(""),
 	}
 
 	tests := []struct {
@@ -81,7 +82,6 @@ func TestRun(t *testing.T) {
 			defer file.Close()
 
 			runner := SoapUIRunner{
-				Fetcher:        f,
 				SoapUIExecPath: file.Name(),
 				Scraper:        s,
 			}
@@ -119,4 +119,16 @@ func createFailingScript() (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+func writeTestContent(t *testing.T, dir string, testScript string) {
+	soapuiScript, err := os.ReadFile(testScript)
+	if err != nil {
+		assert.FailNow(t, "Unable to read soapui test script")
+	}
+
+	err = os.WriteFile(filepath.Join(dir, "test-content"), soapuiScript, 0644)
+	if err != nil {
+		assert.FailNow(t, "Unable to write soapui runner test content file")
+	}
 }
