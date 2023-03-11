@@ -13,8 +13,6 @@ import (
 
 func TestRun(t *testing.T) {
 	tempDir := os.TempDir()
-	os.Setenv("RUNNER_DATADIR", tempDir)
-
 	testXML := "./example/REST-Project-1-soapui-project.xml"
 	writeTestContent(t, tempDir, testXML)
 
@@ -74,6 +72,7 @@ func TestRun(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
+			os.Setenv("RUNNER_DATADIR", tempDir)			
 			s := mock.Scraper{}
 			s.ScrapeFn = test.scraper
 
