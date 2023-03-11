@@ -67,7 +67,7 @@ func (r *SoapUIRunner) Run(execution testkube.Execution) (result testkube.Execut
 			execution.Content.Type_ == string(testkube.TestContentTypeGit) {
 			testFile = filepath.Join(r.DataDir, "repo")
 			if execution.Content.Repository != nil {
-				testFile = filepath.Join(testFile), execution.Content.Repository.Path)
+				testFile = filepath.Join(testFile, execution.Content.Repository.Path)
 			}
 		}
 	}	
